@@ -1,0 +1,8 @@
+django==4.1.1 (if using Django)
+flask==2.2.1 (if using Flask)
+numpy
+pandas
+tensorflow
+keras
+matplotlib
+yfinance

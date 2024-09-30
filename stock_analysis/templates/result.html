@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: 'Everett', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #F7F6F9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #2C2C2C;
+        }
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            height: auto;
+            background: white;
+            box-shadow: 0px 10px 70px rgba(100, 37, 254, 0.1);
+            border-radius: 12px;
+            border: 12px solid #E0E0E0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            margin: 20px 0;
+            font-size: 24px;
+            color: #2C2C2C;
+        }
+        p {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+        .card {
+            width: 100%;
+            padding: 16px;
+            background: #A6F7E2;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .current-value {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        canvas {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+        }
+        a {
+            text-decoration: none;
+            font-size: 16px;
+            color: white;
+            background: #6C8C3C;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        a:hover {
+            background: #5A7A2B;
+        }
+        .date-selector {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .date-selector input {
+            padding: 10px;
+            border: 1px solid #E0E0E0;
+            border-radius: 4px;
+            width: 45%;
+        }
+        .download-btn {
+            background: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .download-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Predicted Stock Price</h1>
+        <div class="card">
+            <div>The predicted stock price is:</div>
+            <div class="current-value">${{ predicted_price }}</div>
+        </div>
+
+        <!-- Date Range Selector -->
+        <div class="date-selector">
+            <input type="date" id="start-date" placeholder="Start Date">
+            <input type="date" id="end-date" placeholder="End Date">
+        </div>
+
+        <!-- Canvas for Chart.js -->
+        <canvas id="stockChart"></canvas>
+
+        <!-- Download Button -->
+        <button class="download-btn" id="download-btn">Download Data</button>
+
+        <div class="footer">
+            <a href="/">Go back</a>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for the chart
+        const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Stock Price',
+                backgroundColor: 'rgba(52, 152, 219, 0.5)',
+                borderColor: 'rgba(52, 152, 219, 1)',
+                data: [300, 310, 290, 320, 350, 340, 360],
+                fill: true,
+            }]
+        };
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Stock Price Predictions Over Time'
+                    }
+                }
+            }
+        };
+        const stockChart = new Chart(
+            document.getElementById('stockChart'),
+            config
+        );
+
+        // Function to download the data as CSV
+        document.getElementById('download-btn').addEventListener('click', function () {
+            const dataString = "data:text/csv;charset=utf-8,";
+            const csvContent = dataString + "Date,Predicted Price\n" +
+                labels.map((label, index) => `${label},${data.datasets[0].data[index]}`).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "predicted_stock_prices.csv");
+            document.body.appendChild(link);
+            link.click();
+        });
+    </script>
+</body>
+</html>

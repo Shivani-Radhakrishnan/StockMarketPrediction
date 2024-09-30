@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .search-bar {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .search-bar input {
+            padding-right: 40px;
+        }
+
+        .search-bar img {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+        }
+
+        .loading-spinner img {
+            width: 50px;
+            height: 50px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Market Prediction</h1>
+        <form action="/predict" method="POST" id="stockForm">
+            <!-- Stock Symbol Selection with Search -->
+            <label for="symbol">Select Stock Symbol:</label>
+            <div class="search-bar">
+                <input type="text" id="symbolSearch" placeholder="Search stock symbol..." onkeyup="filterSymbols()">
+                <img src="https://img.icons8.com/ios-filled/50/search.png" alt="search-icon">
+            </div>
+            <select id="symbol" name="symbol" required>
+                <option value="" disabled selected>Select a stock</option>
+                <option value="AAPL">Apple Inc. (AAPL)</option>
+                <option value="MSFT">Microsoft Corp. (MSFT)</option>
+                <option value="GOOGL">Alphabet Inc. (GOOGL)</option>
+                <option value="AMZN">Amazon.com Inc. (AMZN)</option>
+                <option value="TSLA">Tesla Inc. (TSLA)</option>
+                <option value="NFLX">Netflix Inc. (NFLX)</option>
+                <!-- Add more stock options here -->
+            </select>
+            <br><br>
+
+            <!-- Prediction Date Selection -->
+            <label for="date">Select Prediction Date:</label>
+            <input type="date" id="date" name="date" required>
+            <br><br>
+
+            <!-- Submit Button -->
+            <button type="submit" id="predictBtn">Get Prediction</button>
+        </form>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner">
+            <p>Loading...</p>
+            <img src="https://www.w3schools.com/howto/img_spinner.gif" alt="Loading spinner">
+        </div>
+
+        <!-- Chart Placeholder -->
+        <canvas id="stockChart" style="margin-top: 30px;"></canvas>
+    </div>
+
+    <!-- JavaScript to handle stock symbol filtering and form submission -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function filterSymbols() {
+            const searchInput = document.getElementById('symbolSearch').value.toLowerCase();
+            const stockOptions = document.getElementById('symbol').options;
+
+            for (let i = 0; i < stockOptions.length; i++) {
+                const stockText = stockOptions[i].text.toLowerCase();
+                stockOptions[i].style.display = stockText.includes(searchInput) ? 'block' : 'none';
+            }
+        }
+
+        // Show loading spinner on form submission
+        const stockForm = document.getElementById('stockForm');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const predictBtn = document.getElementById('predictBtn');
+
+        stockForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission behavior
+            loadingSpinner.style.display = 'block'; // Show the loading spinner
+
+            // Simulate a delay for loading (replace with actual AJAX request)
+            setTimeout(function () {
+                loadingSpinner.style.display = 'none';
+                alert('Prediction is ready!');
+                // Here you can load actual prediction data and update the chart
+                loadChartData();
+            }, 2000);
+        });
+
+        // Example function to load chart data (replace with actual data)
+        function loadChartData() {
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Predicted Stock Price',
+                        data: [120, 130, 110, 140, 150, 160, 155],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
